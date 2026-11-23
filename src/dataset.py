@@ -1,10 +1,12 @@
 import os
-import torch
+
 import numpy as np
-from torch.utils.data import Dataset, DataLoader
+import torch
+from PIL import Image
+from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 from torchvision.transforms import InterpolationMode
-from PIL import Image
+
 
 class MedicalDataset(Dataset):
     def __init__(self, image_dir, mask_dir):
@@ -13,18 +15,34 @@ class MedicalDataset(Dataset):
 
         # Filter out non-image files
         valid_exts = {".png", ".jpg", ".jpeg", ".tiff", ".bmp"}
-        self.image_filenames = sorted([f for f in os.listdir(image_dir) if os.path.splitext(f)[1].lower() in valid_exts])
-        self.mask_filenames = sorted([f for f in os.listdir(mask_dir) if os.path.splitext(f)[1].lower() in valid_exts])
+        self.image_filenames = sorted(
+            [
+                f
+                for f in os.listdir(image_dir)
+                if os.path.splitext(f)[1].lower() in valid_exts
+            ]
+        )
+        self.mask_filenames = sorted(
+            [
+                f
+                for f in os.listdir(mask_dir)
+                if os.path.splitext(f)[1].lower() in valid_exts
+            ]
+        )
 
-        self.transform = transforms.Compose([
-            transforms.Resize((256, 256), interpolation=InterpolationMode.BILINEAR),
-            transforms.ToTensor()
-        ])
+        self.transform = transforms.Compose(
+            [
+                transforms.Resize((256, 256), interpolation=InterpolationMode.BILINEAR),
+                transforms.ToTensor(),
+            ]
+        )
 
-        self.mask_transform = transforms.Compose([
-            transforms.Resize((256, 256), interpolation=InterpolationMode.NEAREST),
-            transforms.ToTensor()
-        ])
+        self.mask_transform = transforms.Compose(
+            [
+                transforms.Resize((256, 256), interpolation=InterpolationMode.NEAREST),
+                transforms.ToTensor(),
+            ]
+        )
 
     def __len__(self):
         return len(self.image_filenames)
@@ -47,5 +65,3 @@ class MedicalDataset(Dataset):
         mask = torch.tensor(np.array(mask) > 0, dtype=torch.float32)
 
         return image, mask
-
-

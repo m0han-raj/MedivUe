@@ -1,94 +1,98 @@
-# U-Net Implementation for Medical Image Segmentation
+# MedivUe: U-Net for Medical Image Segmentation
 
-## Table of Contents
-1. [Introduction](#1-introduction)
-2. [Project Overview](#2-project-overview)
-3. [Model Architecture](#3-model-architecture)
-4. [Dataset](#4-dataset)
-5. [Installation](#5-installation)
-6. [Training & Evaluation](#6-training--evaluation)
-7. [Results](#7-results)
-8. [Validation and Loss](#8-validation-and-loss)
-9. [Directory Structure](#9-directory-structure)
-10. [References](#10-references)
+A PyTorch implementation of U-Net for skin lesion segmentation, trained on the ISIC 2018 dataset and evaluated with the Dice coefficient.
 
-## 1. Introduction
-U-Net is a convolutional neural network (CNN) architecture designed for image segmentation tasks. It is widely used in applications such as medical image analysis and satellite image processing. This project implements U-Net for **Medical Image Segmentation** using **PyTorch**.
+## Overview
 
-## 2. Project Overview
-This project aims to develop a deep learning model based on the U-Net architecture for **Medical Image Segmentation**. The model is trained on **ISIC** and evaluated using Dice Coefficient metrics.
-
-## 3. Model Architecture
-**U-Net** consists of an encoder-decoder structure with skip connections:
-- **Encoder**: Feature extraction using convolutional layers
-- **Bottleneck**: Bridge between encoder and decoder
-- **Decoder**: Upsampling and reconstruction of segmented images
-- **Skip Connections**: Help retain spatial information
+U-Net is an encoder-decoder convolutional network with skip connections, widely used for biomedical image segmentation. This project trains a U-Net to produce binary lesion masks from dermoscopic images.
 
 ![U-Net Architecture](data/images_for_readme/Architecture-of-U-Net-with-dense-block.png)
 
-## 4. Dataset
-- **Dataset Name**: [**Dataset**](https://challenge.isic-archive.com/data/#2018)
-- **Number of Images And Masks**: 16072
-- **Classes**: 2
-- **Preprocessing**: 
-  - Resizing images to [256X256]
-  - Normalization
+- **Encoder**: convolutional feature extraction
+- **Bottleneck**: bridge between encoder and decoder
+- **Decoder**: upsampling and reconstruction of the segmentation mask
+- **Skip connections**: retain spatial detail
 
-## 5. Installation
-Clone the repository and install dependencies:
+## Dataset
+
+[ISIC 2018 Challenge, Task 1](https://challenge.isic-archive.com/data/#2018) (lesion boundary segmentation): 16,072 images and masks. Images and masks are resized to 256x256 and converted to tensors. `data/download_isic.py` downloads and extracts the data.
+
+## Project Structure
+
+```
+.
+├── data/
+│   ├── download_isic.py        # Download ISIC 2018 images and masks
+│   ├── images_for_readme/      # Figures used in this README
+│   └── test/                   # Sample test images
+├── src/
+│   ├── dataset.py              # PyTorch Dataset class
+│   ├── unet.py                 # U-Net model
+│   ├── train.py                # Training script (Weights & Biases logging)
+│   ├── utils.py                # Dice metric, model save/load
+│   └── inference.ipynb         # Inference and visualization
+├── requirements.txt
+├── LICENSE
+└── README.md
+```
+
+## Setup
+
 ```bash
-git clone https://github.com/devs-mohanraj/U-Net-Implementation.git
-cd U-Net-Implementation
+git clone https://github.com/m0han-raj/MedivUe.git
+cd MedivUe
 pip install -r requirements.txt
 ```
 
-## 6. Training & Evaluation
-To train the model:
+## Usage
+
+Download the dataset:
+
 ```bash
-python train.py 
+cd data
+python download_isic.py
 ```
-To evaluate the model:
 
-**Use inference.ipynb for visualization**
+Train (requires a Weights & Biases login, or set `mode="offline"` in `src/train.py`):
 
-## 7. Results
-Performance metrics:
-- **Dice Coefficient**: **88.051%**
+```bash
+cd src
+python train.py
+```
 
-Example segmentation results:
+`train.py` currently uses hard-coded dataset and checkpoint paths (`/teamspace/studios/this_studio/...`). Edit `DATASET_PATH`, `MODEL_SAVE_PATH` and the path passed to `save_model` to match your environment.
 
-**The segmentation of the Melanocytic lesion**
+For evaluation and visualization, open `src/inference.ipynb`.
+
+## Results
+
+Dice coefficient: **88.051%**
+
+**Melanocytic lesion segmentation**
+
 ![Melanocytic Lesion](data/images_for_readme/melanocytic_lesion.png)
 
-**The Segmentation of the Final_Stage Melanoma**
+**Melanoma segmentation**
+
 ![Melanoma](data/images_for_readme/melanoma.png)
 
-## 8. Validation and Loss
-**The validation dice score**
-![The Validation Dice Score](data/images_for_readme/validation_dice_score.png)
+**Validation Dice score**
 
-**The training Loss**
-![The Training Loss](data/images_for_readme/train_loss.png)
+![Validation Dice Score](data/images_for_readme/validation_dice_score.png)
 
-## 9. Directory Structure
-```
-unet_medical_segmentation/
-│── data/                   # Dataset folder
-│   ├── images/             # Raw medical images
-│   ├── masks/              # Corresponding segmentation masks
-│── src/                    # Source code
-│   ├── unet.py             # U-Net model implementation
-│   ├── dataset.py          # PyTorch Dataset class
-│   ├── train.py            # Training script
-│   ├── inference.ipynb     # Inference on new images
-│   ├── utils.py            # Utility functions (metrics, visualization)
-│── outputs/                # Output directory
-│   ├── model_weights/      # Saved models
-│── requirements.txt        # Required dependencies
-│── README.md               # Project documentation
-```
+**Training loss**
 
-## 10. References
-- **U-Net Paper**: [Ronneberger et al., 2015](https://arxiv.org/pdf/1505.04597)
-- **ISIC-2018**: [DATASET](https://challenge.isic-archive.com/data/#2018)
+![Training Loss](data/images_for_readme/train_loss.png)
+
+## Tech Stack
+
+Python, PyTorch, torchvision, OpenCV, Matplotlib, Weights & Biases
+
+## References
+
+- Ronneberger et al., [U-Net: Convolutional Networks for Biomedical Image Segmentation](https://arxiv.org/pdf/1505.04597), 2015
+- [ISIC 2018 Challenge dataset](https://challenge.isic-archive.com/data/#2018)
+
+## License
+
+MIT. See [LICENSE](LICENSE).
