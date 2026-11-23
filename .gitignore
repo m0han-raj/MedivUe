@@ -1,8 +1,22 @@
-.lightning_studio
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+.env
+.netrc
+
+# Editors / OS
 .vscode/
 .idea/
+.DS_Store
+.lightning_studio
+
+# Data, outputs, logs
 data/isic_dataset/
-output/model_path/
-src/wandb/
-.netrc
+output/
+outputs/
 wandb/
+src/wandb/
+*.pth
